@@ -93,8 +93,14 @@ defmodule Que.Server do
     {:reply, :ok, queue}
   end
 
-
-
+  def handle_call(:pop_job, _from, queue) do
+    case Que.Queue.fetch(queue) do
+      {_, nil} ->
+        {:reply, :no_jobs, queue}
+      {q, job} ->
+        {:reply, job.arguments, q}
+    end
+  end
 
   # Job was completed successfully - Does cleanup and executes the Success
   # callback on the Worker
@@ -156,4 +162,3 @@ defmodule Que.Server do
   end
 
 end
-
